@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/material.css">
+</head>
+<body class="pkn-body" data-page="material">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat data material...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-boxes"></i> Material</div>
+                    <h1 class="page-title">Manajemen Material</h1>
+                    <p class="page-subtitle">Monitor stok dan penggunaan material proyek</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="exportMaterial()">
+                        <i class="fas fa-file-excel"></i> Export
+                    </button>
+                    <button class="btn-pkn btn-pkn-accent" onclick="openAddMaterial()">
+                        <i class="fas fa-plus"></i> Tambah Material
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#1a3a5c;--stat-bg:rgba(26,58,92,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-boxes"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statTotalMat">24</div>
+                            <div class="stat-label">Jenis Material</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#27ae60;--stat-bg:rgba(39,174,96,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statStokAman">18</div>
+                            <div class="stat-label">Stok Aman</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#e8a020;--stat-bg:rgba(232,160,32,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statStokRendah">4</div>
+                            <div class="stat-label">Stok Rendah</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#e74c3c;--stat-bg:rgba(231,76,60,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-times-circle"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statHabis">2</div>
+                            <div class="stat-label">Stok Habis</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Table -->
+            <div class="pkn-card">
+                <div class="pkn-filter-row">
+                    <span class="filter-label"><i class="fas fa-filter"></i> Filter</span>
+                    <select class="filter-select" id="filterProject" onchange="renderMaterial()">
+                        <option value="">Semua Proyek</option>
+                        <option>Gedung Perkantoran Tower A</option>
+                        <option>Jembatan Layang Kelapa Gading</option>
+                        <option>Perumahan Grand PKN Residence</option>
+                        <option>Renovasi Gedung B Pemda</option>
+                        <option>Dermaga Pelabuhan PKN</option>
+                    </select>
+                    <select class="filter-select" id="filterStatus" onchange="renderMaterial()">
+                        <option value="">Semua Status</option>
+                        <option value="aman">Stok Aman</option>
+                        <option value="rendah">Stok Rendah</option>
+                        <option value="habis">Stok Habis</option>
+                    </select>
+                    <select class="filter-select" id="filterKategori" onchange="renderMaterial()">
+                        <option value="">Semua Kategori</option>
+                        <option value="Bahan Baku">Bahan Baku</option>
+                        <option value="Baja">Baja</option>
+                        <option value="Kayu">Kayu</option>
+                        <option value="Finishing">Finishing</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                    <div class="pkn-search ms-auto">
+                        <i class="fas fa-search pkn-search-icon"></i>
+                        <input type="text" class="pkn-search-input" id="searchMaterial" placeholder="Cari material..." oninput="renderMaterial()">
+                    </div>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px">No</th>
+                                    <th>Nama Material</th>
+                                    <th>Kategori</th>
+                                    <th>Proyek</th>
+                                    <th style="width:110px">Stok Masuk</th>
+                                    <th style="width:110px">Stok Pakai</th>
+                                    <th style="width:110px">Sisa Stok</th>
+                                    <th style="width:80px">Satuan</th>
+                                    <th style="width:110px">Status</th>
+                                    <th style="width:80px">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyMaterial" class="pkn-empty" style="display:none">
+                        <div class="pkn-empty-icon"><i class="fas fa-boxes"></i></div>
+                        <div class="pkn-empty-title">Belum ada data material</div>
+                        <div class="pkn-empty-desc">Tambahkan material proyek untuk memulai monitoring stok.</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal Tambah Material -->
+<div class="modal fade" id="materialModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius:var(--radius-lg);border:1px solid var(--pkn-border)">
+            <div class="modal-header" style="border-bottom:1px solid var(--pkn-border-light);padding:18px 24px">
+                <h5 class="modal-title" id="materialModalTitle">
+                    <i class="fas fa-box me-2 text-pkn"></i>Tambah Material
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Nama Material <span class="required">*</span></label>
+                            <input type="text" class="pkn-form-control" id="matName" placeholder="Nama material">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Kategori</label>
+                            <select class="pkn-form-control" id="matKategori">
+                                <option>Bahan Baku</option><option>Baja</option>
+                                <option>Kayu</option><option>Finishing</option><option>Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Proyek</label>
+                            <select class="pkn-form-control" id="matProject">
+                                <option>Gedung Perkantoran Tower A</option>
+                                <option>Jembatan Layang Kelapa Gading</option>
+                                <option>Perumahan Grand PKN Residence</option>
+                                <option>Renovasi Gedung B Pemda</option>
+                                <option>Dermaga Pelabuhan PKN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Stok Masuk</label>
+                            <input type="number" class="pkn-form-control" id="matStokMasuk" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Satuan</label>
+                            <select class="pkn-form-control" id="matSatuan">
+                                <option>sak</option><option>m³</option><option>ton</option>
+                                <option>batang</option><option>lembar</option><option>liter</option><option>unit</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Stok Minimum</label>
+                            <input type="number" class="pkn-form-control" id="matMinStok" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Harga Satuan (Rp)</label>
+                            <input type="number" class="pkn-form-control" id="matHarga" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="pkn-form-group">
+                            <label class="pkn-form-label">Keterangan</label>
+                            <textarea class="pkn-form-control" id="matNotes" rows="2" placeholder="Keterangan tambahan..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid var(--pkn-border-light);padding:16px 24px">
+                <button type="button" class="btn-pkn btn-pkn-ghost" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn-pkn btn-pkn-primary" onclick="saveMaterial()">
+                    <i class="fas fa-save me-1"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/material.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

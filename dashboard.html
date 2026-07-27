@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — PKN Construction Management System</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/dashboard.css">
+</head>
+<body class="pkn-body" data-page="dashboard">
+
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat dashboard...</div>
+    </div>
+</div>
+
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <!-- Page Header -->
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-th-large"></i> Dashboard</div>
+                    <h1 class="page-title">Overview Proyek</h1>
+                    <p class="page-subtitle" id="pknDate">Memuat tanggal...</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <a href="daily-report.html" class="btn-pkn btn-pkn-accent">
+                        <i class="fas fa-plus"></i> Laporan Baru
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-xl-3">
+                    <div class="stat-card" style="--stat-color:#1a3a5c;--stat-bg:rgba(26,58,92,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-project-diagram"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statProyek">8</div>
+                            <div class="stat-label">Total Proyek</div>
+                            <span class="stat-change up"><i class="fas fa-arrow-up"></i> 2 baru</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="stat-card" style="--stat-color:#27ae60;--stat-bg:rgba(39,174,96,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-file-check"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statLaporan">0</div>
+                            <div class="stat-label">Total Laporan</div>
+                            <span class="stat-change up"><i class="fas fa-arrow-up"></i> bulan ini</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="stat-card" style="--stat-color:#e8a020;--stat-bg:rgba(232,160,32,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-hard-hat"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statWorkers">284</div>
+                            <div class="stat-label">Total Pekerja</div>
+                            <span class="stat-change flat"><i class="fas fa-minus"></i> Stabil</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="stat-card" style="--stat-color:#2980b9;--stat-bg:rgba(41,128,185,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statProgress">72%</div>
+                            <div class="stat-label">Avg. Progress</div>
+                            <span class="stat-change up"><i class="fas fa-arrow-up"></i> 5% vs lalu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-xl-8">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-chart-bar"></i> Progress Proyek Bulanan</h3>
+                            <div class="pkn-card-actions">
+                                <select class="filter-select" id="chartYearFilter" onchange="updateProgressChart(this.value)">
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:260px">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-chart-pie"></i> Status Proyek</h3>
+                        </div>
+                        <div class="pkn-card-body d-flex flex-column align-items-center">
+                            <div class="pkn-chart-container" style="height:200px;width:200px">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                            <div class="chart-legend mt-3 w-100">
+                                <div class="legend-item"><span class="legend-dot" style="background:#27ae60"></span>Selesai (2)</div>
+                                <div class="legend-item"><span class="legend-dot" style="background:#1a3a5c"></span>Berjalan (4)</div>
+                                <div class="legend-item"><span class="legend-dot" style="background:#e8a020"></span>Persiapan (1)</div>
+                                <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span>Tunda (1)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects + Activity -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-7">
+                    <div class="pkn-card">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-tasks"></i> Proyek Aktif</h3>
+                            <a href="progress.html" class="btn-pkn btn-pkn-ghost btn-pkn-sm">Lihat Semua</a>
+                        </div>
+                        <div class="pkn-card-body p-0">
+                            <div class="project-list" id="projectList"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-bell"></i> Aktivitas Terbaru</h3>
+                            <span class="pkn-badge pkn-badge-danger">5 Baru</span>
+                        </div>
+                        <div class="pkn-card-body p-0">
+                            <div class="activity-feed" id="activityFeed"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="row g-3">
+                <div class="col-12 col-md-4 col-xl-3">
+                    <div class="pkn-card weather-card">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-cloud-sun"></i> Cuaca Hari Ini</h3>
+                        </div>
+                        <div class="pkn-card-body text-center">
+                            <div class="weather-icon"><i class="fas fa-sun" style="color:#f39c12;font-size:3rem"></i></div>
+                            <div class="weather-temp">32°C</div>
+                            <div class="weather-desc">Cerah Berawan</div>
+                            <div class="weather-location"><i class="fas fa-map-marker-alt"></i> Jakarta, DKI Jakarta</div>
+                            <div class="weather-details">
+                                <div class="weather-detail-item">
+                                    <i class="fas fa-tint text-info"></i>
+                                    <span>65%</span><small>Kelembaban</small>
+                                </div>
+                                <div class="weather-detail-item">
+                                    <i class="fas fa-wind text-secondary"></i>
+                                    <span>12 km/h</span><small>Angin</small>
+                                </div>
+                                <div class="weather-detail-item">
+                                    <i class="fas fa-eye" style="color:#1a3a5c"></i>
+                                    <span>10 km</span><small>Visibilitas</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-8 col-xl-5">
+                    <div class="pkn-card">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-file-alt"></i> Laporan Terbaru</h3>
+                            <a href="reports.html" class="btn-pkn btn-pkn-ghost btn-pkn-sm">Semua</a>
+                        </div>
+                        <div id="recentReports"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4">
+                    <div class="pkn-card">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-users"></i> Pekerja per Proyek</h3>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:200px">
+                                <canvas id="workerChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

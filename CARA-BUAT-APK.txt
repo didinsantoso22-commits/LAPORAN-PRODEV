@@ -1,0 +1,108 @@
+================================================================
+  PKN CMS — PANDUAN LENGKAP BUAT APK ANDROID
+  PT Pesona Khatulistiwa Nusantara
+================================================================
+
+Ada 2 cara membuat APK:
+
+================================================================
+CARA 1: PALING MUDAH — Pakai Website Online (GRATIS)
+         Tidak perlu install apapun di PC!
+================================================================
+
+LANGKAH A — Upload dulu ke hosting gratis:
+----------------------------------------------
+1. Buka: https://app.netlify.com/drop
+2. Drag & drop SELURUH FOLDER "pkn-cms" ke halaman itu
+3. Tunggu upload selesai (1-2 menit)
+4. Dapat link seperti: https://amazing-name-123.netlify.app
+5. CATAT link ini, akan dipakai di langkah berikutnya
+
+LANGKAH B — Konversi ke APK:
+----------------------------------------------
+1. Buka: https://www.pwabuilder.com
+2. Paste link Netlify tadi → klik "Start"
+3. Tunggu analisis selesai (30 detik)
+4. Klik tombol "Package for stores"
+5. Pilih "Android" → klik "Generate"
+6. Download file APK yang dihasilkan
+7. Kirim file APK ke HP Android via WhatsApp/email
+8. Di HP: buka file APK → Install
+9. Izinkan "Install dari sumber tidak dikenal" jika diminta
+10. Selesai! Ikon PKN CMS muncul di homescreen
+
+
+================================================================
+CARA 2: PAKAI PC (Untuk yang mau hasil lebih profesional)
+================================================================
+
+Yang dibutuhkan:
+- PC Windows/Mac/Linux
+- Node.js (download di nodejs.org)
+- Koneksi internet
+
+LANGKAH-LANGKAH:
+----------------------------------------------
+1. Upload ke Netlify dulu (sama seperti Cara 1 Langkah A)
+   → Dapat link: https://xxx.netlify.app
+
+2. Install Bubblewrap di PC:
+   Buka terminal/command prompt, ketik:
+   npm install -g @bubblewrap/cli
+
+3. Buat project APK:
+   mkdir pkn-apk
+   cd pkn-apk
+   bubblewrap init --manifest https://xxx.netlify.app/manifest.json
+
+4. Isi pertanyaan yang muncul:
+   - Application name: PKN CMS
+   - Package ID: com.pkn.cms
+   - Version: 1.0.0
+
+5. Build APK:
+   bubblewrap build
+
+6. File APK ada di folder: pkn-apk/app-release-unsigned.apk
+
+7. Kirim ke HP → Install!
+
+
+================================================================
+CARA 3: TERCEPAT — Tanpa APK, langsung pakai di HP seperti App
+================================================================
+
+Ini cara paling mudah dan SUDAH BISA SEKARANG tanpa upload!
+
+Di HP Android:
+1. Copy seluruh folder pkn-cms ke HP (via USB/WhatsApp)
+2. Install browser "Kiwi Browser" dari Play Store
+3. Buka Kiwi Browser → ketik: file:///sdcard/pkn-cms/index.html
+4. Tap menu (titik 3) → "Add to Home Screen"
+5. Selesai! Ada ikon PKN CMS di homescreen
+
+Atau pakai aplikasi "Web Server for Android" dari Play Store:
+1. Install "Web Server for Android"
+2. Set folder ke folder pkn-cms
+3. Start server → buka di browser HP
+4. Add to Homescreen
+
+
+================================================================
+CATATAN PENTING
+================================================================
+
+✓ Aplikasi sudah PWA-ready (ada manifest.json dan sw.js)
+✓ Bisa jalan OFFLINE setelah pertama kali dibuka
+✓ Data tersimpan di HP (tidak hilang walau tutup app)
+✓ Tampilan seperti app native di HP
+
+Link berguna:
+- Netlify Drop  : https://app.netlify.com/drop
+- PWA Builder   : https://www.pwabuilder.com
+- Node.js       : https://nodejs.org
+- Bubblewrap    : https://github.com/GoogleChromeLabs/bubblewrap
+
+================================================================
+  Hubungi developer jika ada pertanyaan
+================================================================

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Center — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/message.css">
+</head>
+<body class="pkn-body" data-page="message">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat pesan...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content msg-content" id="pknContent">
+            <div class="msg-layout">
+
+                <!-- Channel / Contact List -->
+                <div class="msg-sidebar" id="msgSidebar">
+                    <div class="msg-sidebar-header">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                            <h2 style="font-size:.95rem;font-weight:700;color:var(--pkn-text-primary);margin:0">Message Center</h2>
+                            <button class="btn-pkn btn-pkn-ghost btn-pkn-icon btn-pkn-sm" onclick="openNewChat()" title="Chat Baru"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="pkn-search">
+                            <i class="fas fa-search pkn-search-icon"></i>
+                            <input type="text" class="pkn-search-input" id="searchChat" placeholder="Cari pesan..." style="width:100%" oninput="filterChats(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="msg-tabs">
+                        <button class="msg-tab active" onclick="switchMsgTab('dm',this)">
+                            <i class="fas fa-user me-1"></i>Pesan
+                        </button>
+                        <button class="msg-tab" onclick="switchMsgTab('channel',this)">
+                            <i class="fas fa-hashtag me-1"></i>Channel
+                        </button>
+                    </div>
+
+                    <!-- DM List -->
+                    <div id="dmList" class="msg-contact-list">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <!-- Channel List -->
+                    <div id="channelList" class="msg-contact-list" style="display:none">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="msg-chat-area" id="msgChatArea">
+                    <!-- Chat Header -->
+                    <div class="msg-chat-header" id="msgChatHeader">
+                        <div class="msg-chat-header-info">
+                            <div class="msg-chat-avatar" id="chatAvatar">G</div>
+                            <div>
+                                <div class="msg-chat-name" id="chatName">Pilih Percakapan</div>
+                                <div class="msg-chat-status" id="chatStatus">Pilih kontak atau channel untuk memulai</div>
+                            </div>
+                        </div>
+                        <div class="msg-chat-actions">
+                            <button class="btn-pkn btn-pkn-ghost btn-pkn-sm btn-pkn-icon" title="Video Call"><i class="fas fa-video"></i></button>
+                            <button class="btn-pkn btn-pkn-ghost btn-pkn-sm btn-pkn-icon" title="Voice Call"><i class="fas fa-phone"></i></button>
+                            <button class="btn-pkn btn-pkn-ghost btn-pkn-sm btn-pkn-icon" title="Info"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <div class="msg-messages" id="msgMessages">
+                        <div class="msg-welcome">
+                            <div class="msg-welcome-icon"><i class="fas fa-comments"></i></div>
+                            <div class="msg-welcome-title">PKN Message Center</div>
+                            <div class="msg-welcome-desc">Pilih percakapan di sebelah kiri untuk mulai berkomunikasi dengan tim proyek Anda.</div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="msg-input-area" id="msgInputArea">
+                        <div class="msg-input-wrap">
+                            <div class="msg-input-toolbar">
+                                <button class="msg-tool-btn" title="Bold"><i class="fas fa-bold"></i></button>
+                                <button class="msg-tool-btn" title="Italic"><i class="fas fa-italic"></i></button>
+                                <button class="msg-tool-btn" title="Attach"><i class="fas fa-paperclip"></i></button>
+                                <button class="msg-tool-btn" title="Emoji"><i class="fas fa-smile"></i></button>
+                                <button class="msg-tool-btn" title="Mention"><i class="fas fa-at"></i></button>
+                            </div>
+                            <div class="msg-input-row">
+                                <textarea class="msg-input" id="msgInput" placeholder="Ketik pesan..." rows="1"
+                                    onkeydown="handleMsgKey(event)" oninput="autoResize(this)"></textarea>
+                                <button class="msg-send-btn" id="msgSendBtn" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel (Members / Info) -->
+                <div class="msg-info-panel" id="msgInfoPanel">
+                    <div class="msg-info-header">
+                        <h3>Anggota Tim</h3>
+                        <button class="btn-pkn btn-pkn-ghost btn-pkn-icon btn-pkn-sm" onclick="toggleInfoPanel()"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="msg-members" id="msgMembers"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/message.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

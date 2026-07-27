@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/setting.css">
+</head>
+<body class="pkn-body" data-page="setting">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat pengaturan...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-cog"></i> Settings</div>
+                    <h1 class="page-title">Pengaturan Sistem</h1>
+                    <p class="page-subtitle">Kelola profil, keamanan, dan preferensi sistem</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-accent" onclick="saveAllSettings()">
+                        <i class="fas fa-save"></i> Simpan Semua
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left: Nav -->
+                <div class="col-12 col-lg-3">
+                    <div class="pkn-card setting-nav-card">
+                        <div class="setting-nav">
+                            <button class="setting-nav-item active" onclick="switchSettingTab('profile',this)">
+                                <i class="fas fa-user-circle"></i><span>Profil Pengguna</span>
+                            </button>
+                            <button class="setting-nav-item" onclick="switchSettingTab('company',this)">
+                                <i class="fas fa-building"></i><span>Perusahaan</span>
+                            </button>
+                            <button class="setting-nav-item" onclick="switchSettingTab('security',this)">
+                                <i class="fas fa-shield-alt"></i><span>Keamanan</span>
+                            </button>
+                            <button class="setting-nav-item" onclick="switchSettingTab('notif',this)">
+                                <i class="fas fa-bell"></i><span>Notifikasi</span>
+                            </button>
+                            <button class="setting-nav-item" onclick="switchSettingTab('appearance',this)">
+                                <i class="fas fa-palette"></i><span>Tampilan</span>
+                            </button>
+                            <button class="setting-nav-item" onclick="switchSettingTab('data',this)">
+                                <i class="fas fa-database"></i><span>Data & Privasi</span>
+                            </button>
+                            <button class="setting-nav-item" onclick="switchSettingTab('about',this)">
+                                <i class="fas fa-info-circle"></i><span>Tentang Sistem</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Content -->
+                <div class="col-12 col-lg-9">
+
+                    <!-- Profile -->
+                    <div id="tab-profile" class="setting-tab active">
+                        <div class="pkn-card">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-user-circle"></i> Profil Pengguna</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="profile-avatar-section mb-4">
+                                    <div class="profile-avatar-lg" id="profileAvatarDisplay">A</div>
+                                    <div>
+                                        <div style="font-size:.9rem;font-weight:700;color:var(--pkn-text-primary)" id="profileNameDisplay">Admin User</div>
+                                        <div style="font-size:.78rem;color:var(--pkn-text-muted)" id="profileRoleDisplay">Administrator</div>
+                                        <button class="btn-pkn btn-pkn-ghost btn-pkn-sm mt-2" onclick="changeAvatar()">
+                                            <i class="fas fa-camera me-1"></i> Ganti Foto
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Nama Lengkap <span class="required">*</span></label><input type="text" class="pkn-form-control" id="settingName" placeholder="Nama lengkap Anda"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Username</label><input type="text" class="pkn-form-control" id="settingUsername" readonly style="background:var(--pkn-bg)"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Email</label><input type="email" class="pkn-form-control" id="settingEmail" placeholder="email@perusahaan.com"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">No. HP</label><input type="tel" class="pkn-form-control" id="settingPhone" placeholder="+62 xxx xxxx xxxx"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Jabatan</label><input type="text" class="pkn-form-control" id="settingRole" placeholder="Jabatan / posisi"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Departemen</label>
+                                        <select class="pkn-form-control" id="settingDept">
+                                            <option>Manajemen</option><option>Teknik</option><option>Logistik</option>
+                                            <option>K3</option><option>Keuangan</option><option>SDM</option>
+                                        </select></div></div>
+                                    <div class="col-12"><div class="pkn-form-group"><label class="pkn-form-label">Bio / Keterangan</label><textarea class="pkn-form-control" id="settingBio" rows="3" placeholder="Deskripsi singkat..."></textarea></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company -->
+                    <div id="tab-company" class="setting-tab">
+                        <div class="pkn-card">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-building"></i> Informasi Perusahaan</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="company-logo-section mb-3">
+                                            <img src="assets/img/logo.svg" alt="PKN Logo" style="width:64px;height:64px;object-fit:contain" onerror="this.style.display='none'">
+                                            <div>
+                                                <div style="font-weight:700;color:var(--pkn-text-primary)">PT Pesona Khatulistiwa Nusantara</div>
+                                                <button class="btn-pkn btn-pkn-ghost btn-pkn-sm mt-1" onclick="changeLogo()"><i class="fas fa-upload me-1"></i>Ganti Logo</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Nama Perusahaan</label><input type="text" class="pkn-form-control" id="compName" value="PT Pesona Khatulistiwa Nusantara"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">No. NPWP</label><input type="text" class="pkn-form-control" id="compNpwp" placeholder="XX.XXX.XXX.X-XXX.XXX"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">No. SIUP</label><input type="text" class="pkn-form-control" id="compSiup" placeholder="Nomor SIUP"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Telepon Kantor</label><input type="tel" class="pkn-form-control" id="compPhone" placeholder="+62 21 xxxx xxxx"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Email Perusahaan</label><input type="email" class="pkn-form-control" id="compEmail" placeholder="info@pkn.co.id"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Website</label><input type="url" class="pkn-form-control" id="compWeb" placeholder="https://www.pkn.co.id"></div></div>
+                                    <div class="col-12"><div class="pkn-form-group"><label class="pkn-form-label">Alamat Kantor</label><textarea class="pkn-form-control" id="compAddress" rows="3" placeholder="Alamat lengkap kantor pusat..."></textarea></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div id="tab-security" class="setting-tab">
+                        <div class="pkn-card mb-3">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-key"></i> Ganti Password</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-12"><div class="pkn-form-group"><label class="pkn-form-label">Password Saat Ini <span class="required">*</span></label><input type="password" class="pkn-form-control" id="currentPass" placeholder="••••••••"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Password Baru <span class="required">*</span></label><input type="password" class="pkn-form-control" id="newPass" placeholder="Min. 8 karakter" oninput="checkPasswordStrength(this.value)"></div></div>
+                                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Konfirmasi Password Baru</label><input type="password" class="pkn-form-control" id="confirmPass" placeholder="Ulangi password baru"></div></div>
+                                    <div class="col-12">
+                                        <div class="pass-strength" id="passStrength" style="display:none">
+                                            <div class="pass-strength-bar">
+                                                <div class="pass-strength-fill" id="passStrengthFill"></div>
+                                            </div>
+                                            <span class="pass-strength-label" id="passStrengthLabel">Lemah</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn-pkn btn-pkn-primary" onclick="changePassword()">
+                                            <i class="fas fa-lock me-1"></i> Ganti Password
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pkn-card">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-history"></i> Sesi Aktif</h3></div>
+                            <div class="pkn-card-body p-0">
+                                <div class="session-item">
+                                    <div class="session-icon"><i class="fas fa-desktop"></i></div>
+                                    <div class="session-info">
+                                        <div class="session-device">Chrome · Windows 11</div>
+                                        <div class="session-meta">Jakarta, Indonesia · Sesi ini</div>
+                                    </div>
+                                    <span class="pkn-badge pkn-badge-success">Aktif</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div id="tab-notif" class="setting-tab">
+                        <div class="pkn-card">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-bell"></i> Preferensi Notifikasi</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="setting-section-title">Notifikasi Email</div>
+                                <div class="toggle-list">
+                                    <div class="toggle-item"><div class="toggle-info"><div class="toggle-label">Laporan Baru Masuk</div><div class="toggle-desc">Notifikasi saat laporan baru disubmit</div></div><label class="pkn-toggle"><input type="checkbox" checked id="notifReportEmail"><span class="toggle-slider"></span></label></div>
+                                    <div class="toggle-item"><div class="toggle-info"><div class="toggle-label">Stok Material Rendah</div><div class="toggle-desc">Alert ketika stok di bawah minimum</div></div><label class="pkn-toggle"><input type="checkbox" checked id="notifStokEmail"><span class="toggle-slider"></span></label></div>
+                                    <div class="toggle-item"><div class="toggle-info"><div class="toggle-label">Milestone Proyek</div><div class="toggle-desc">Pemberitahuan pencapaian target</div></div><label class="pkn-toggle"><input type="checkbox" id="notifMilestone"><span class="toggle-slider"></span></label></div>
+                                </div>
+                                <div class="setting-section-title mt-4">Notifikasi Browser</div>
+                                <div class="toggle-list">
+                                    <div class="toggle-item"><div class="toggle-info"><div class="toggle-label">Pesan Baru</div><div class="toggle-desc">Notifikasi pesan dari tim</div></div><label class="pkn-toggle"><input type="checkbox" checked id="notifMsgBrowser"><span class="toggle-slider"></span></label></div>
+                                    <div class="toggle-item"><div class="toggle-info"><div class="toggle-label">Pengingat Laporan</div><div class="toggle-desc">Reminder laporan harian jam 16:00</div></div><label class="pkn-toggle"><input type="checkbox" checked id="notifReminderBrowser"><span class="toggle-slider"></span></label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appearance -->
+                    <div id="tab-appearance" class="setting-tab">
+                        <div class="pkn-card">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-palette"></i> Pengaturan Tampilan</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="setting-section-title">Tema</div>
+                                <div class="theme-options">
+                                    <div class="theme-option selected" onclick="setTheme('light',this)">
+                                        <div class="theme-preview light-preview"><div class="tp-sidebar"></div><div class="tp-content"><div class="tp-bar"></div><div class="tp-card"></div></div></div>
+                                        <div class="theme-label">Terang</div>
+                                    </div>
+                                    <div class="theme-option" onclick="setTheme('dark',this)">
+                                        <div class="theme-preview dark-preview"><div class="tp-sidebar dark"></div><div class="tp-content dark"><div class="tp-bar dark"></div><div class="tp-card dark"></div></div></div>
+                                        <div class="theme-label">Gelap (Soon)</div>
+                                    </div>
+                                </div>
+                                <div class="setting-section-title mt-4">Bahasa</div>
+                                <select class="pkn-form-control" id="settingLang" style="max-width:260px">
+                                    <option value="id" selected>🇮🇩 Bahasa Indonesia</option>
+                                    <option value="en">🇺🇸 English</option>
+                                </select>
+                                <div class="setting-section-title mt-4">Format Tanggal</div>
+                                <select class="pkn-form-control" id="settingDateFormat" style="max-width:260px">
+                                    <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data -->
+                    <div id="tab-data" class="setting-tab">
+                        <div class="pkn-card mb-3">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-database"></i> Manajemen Data</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="data-item">
+                                    <div>
+                                        <div class="data-label">Export Semua Data</div>
+                                        <div class="data-desc">Download semua data laporan, material, dan pekerja dalam format JSON</div>
+                                    </div>
+                                    <button class="btn-pkn btn-pkn-outline" onclick="exportAllData()">
+                                        <i class="fas fa-download me-1"></i> Export
+                                    </button>
+                                </div>
+                                <div class="data-item">
+                                    <div>
+                                        <div class="data-label">Import Data</div>
+                                        <div class="data-desc">Impor data dari file JSON yang sebelumnya diekspor</div>
+                                    </div>
+                                    <button class="btn-pkn btn-pkn-outline" onclick="importData()">
+                                        <i class="fas fa-upload me-1"></i> Import
+                                    </button>
+                                </div>
+                                <div class="data-item border-danger-subtle">
+                                    <div>
+                                        <div class="data-label text-danger">Reset Data Laporan</div>
+                                        <div class="data-desc text-muted">Hapus semua laporan harian. Tindakan ini tidak dapat dibatalkan.</div>
+                                    </div>
+                                    <button class="btn-pkn btn-pkn-danger" onclick="resetReports()">
+                                        <i class="fas fa-trash me-1"></i> Reset
+                                    </button>
+                                </div>
+                                <div class="data-item border-danger-subtle">
+                                    <div>
+                                        <div class="data-label text-danger">Reset Semua Data</div>
+                                        <div class="data-desc text-muted">Hapus seluruh data sistem. Tidak dapat dikembalikan!</div>
+                                    </div>
+                                    <button class="btn-pkn btn-pkn-danger" onclick="resetAllData()">
+                                        <i class="fas fa-exclamation-triangle me-1"></i> Reset Semua
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div id="tab-about" class="setting-tab">
+                        <div class="pkn-card">
+                            <div class="pkn-card-header"><h3 class="pkn-card-title"><i class="fas fa-info-circle"></i> Tentang Sistem</h3></div>
+                            <div class="pkn-card-body">
+                                <div class="about-logo-section">
+                                    <img src="assets/img/logo.svg" alt="PKN" style="width:80px;height:80px;object-fit:contain" onerror="this.style.display='none'">
+                                    <div>
+                                        <div class="about-app-name">PKN Construction Management System</div>
+                                        <div class="about-app-sub">Construction Daily Report & Project Monitoring</div>
+                                    </div>
+                                </div>
+                                <div class="about-info-grid">
+                                    <div class="about-info-item"><span class="about-info-label">Versi</span><span class="about-info-val">v2.0.0</span></div>
+                                    <div class="about-info-item"><span class="about-info-label">Perusahaan</span><span class="about-info-val">PT Pesona Khatulistiwa Nusantara</span></div>
+                                    <div class="about-info-item"><span class="about-info-label">Platform</span><span class="about-info-val">Web (HTML/CSS/JS)</span></div>
+                                    <div class="about-info-item"><span class="about-info-label">Browser</span><span class="about-info-val" id="aboutBrowser">-</span></div>
+                                    <div class="about-info-item"><span class="about-info-label">Storage Terpakai</span><span class="about-info-val" id="aboutStorage">0 KB</span></div>
+                                    <div class="about-info-item"><span class="about-info-label">Tahun</span><span class="about-info-val">© 2025</span></div>
+                                </div>
+                                <div class="pkn-alert pkn-alert-info mt-4">
+                                    <i class="fas fa-info-circle pkn-alert-icon"></i>
+                                    <span>Sistem ini menggunakan localStorage browser untuk penyimpanan data. Data tersimpan di perangkat ini saja.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/setting.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

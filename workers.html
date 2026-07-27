@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenaga Kerja — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/workers.css">
+</head>
+<body class="pkn-body" data-page="workers">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat data pekerja...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-hard-hat"></i> Tenaga Kerja</div>
+                    <h1 class="page-title">Manajemen Tenaga Kerja</h1>
+                    <p class="page-subtitle">Monitor kehadiran dan distribusi tenaga kerja proyek</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="exportWorkers()">
+                        <i class="fas fa-file-excel"></i> Export
+                    </button>
+                    <button class="btn-pkn btn-pkn-accent" onclick="openAddWorker()">
+                        <i class="fas fa-plus"></i> Tambah Pekerja
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#1a3a5c;--stat-bg:rgba(26,58,92,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-users"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statTotalWorker">0</div>
+                            <div class="stat-label">Total Pekerja</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#27ae60;--stat-bg:rgba(39,174,96,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-user-check"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statHadir">0</div>
+                            <div class="stat-label">Hadir Hari Ini</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#e8a020;--stat-bg:rgba(232,160,32,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-user-times"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statAbsen">0</div>
+                            <div class="stat-label">Absen</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card" style="--stat-color:#2980b9;--stat-bg:rgba(41,128,185,.08)">
+                        <div class="stat-icon-wrap"><i class="fas fa-user-tie"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value" id="statSubkon">0</div>
+                            <div class="stat-label">Subkontraktor</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="pkn-tabs mb-4" id="workerTabs">
+                <button class="pkn-tab-btn active" onclick="switchTab('list',this)"><i class="fas fa-list me-1"></i>Daftar Pekerja</button>
+                <button class="pkn-tab-btn" onclick="switchTab('absensi',this)"><i class="fas fa-calendar-check me-1"></i>Absensi Harian</button>
+                <button class="pkn-tab-btn" onclick="switchTab('rekap',this)"><i class="fas fa-chart-bar me-1"></i>Rekap Bulanan</button>
+            </div>
+
+            <!-- Tab: List -->
+            <div id="tab-list" class="pkn-tab-content active">
+                <div class="pkn-card">
+                    <div class="pkn-filter-row">
+                        <span class="filter-label"><i class="fas fa-filter"></i> Filter</span>
+                        <select class="filter-select" id="filterWorkerProject" onchange="renderWorkers()">
+                            <option value="">Semua Proyek</option>
+                            <option>Gedung Perkantoran Tower A</option>
+                            <option>Jembatan Layang Kelapa Gading</option>
+                            <option>Perumahan Grand PKN Residence</option>
+                        </select>
+                        <select class="filter-select" id="filterWorkerType" onchange="renderWorkers()">
+                            <option value="">Semua Jenis</option>
+                            <option>Mandor</option><option>Tukang Bata</option>
+                            <option>Tukang Besi</option><option>Tukang Kayu</option>
+                            <option>Kenek</option><option>Operator Alat</option>
+                        </select>
+                        <div class="pkn-search ms-auto">
+                            <i class="fas fa-search pkn-search-icon"></i>
+                            <input type="text" class="pkn-search-input" id="searchWorker" placeholder="Cari pekerja..." oninput="renderWorkers()">
+                        </div>
+                    </div>
+                    <div class="pkn-card-body p-0">
+                        <div class="pkn-table-wrap" style="border:none">
+                            <table class="pkn-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th><th>Nama</th><th>Jenis</th>
+                                        <th>Proyek</th><th>Subkontraktor</th>
+                                        <th>Jam/Hari</th><th>Status</th><th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workerListBody"></tbody>
+                            </table>
+                        </div>
+                        <div id="emptyWorkers" class="pkn-empty" style="display:none">
+                            <div class="pkn-empty-icon"><i class="fas fa-hard-hat"></i></div>
+                            <div class="pkn-empty-title">Belum ada data pekerja</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Absensi -->
+            <div id="tab-absensi" class="pkn-tab-content">
+                <div class="pkn-card">
+                    <div class="pkn-card-header">
+                        <h3 class="pkn-card-title"><i class="fas fa-calendar-check"></i> Absensi Harian</h3>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <input type="date" class="filter-select" id="absensiDate" style="padding:0 10px">
+                            <button class="btn-pkn btn-pkn-primary btn-pkn-sm" onclick="saveAbsensi()"><i class="fas fa-save me-1"></i>Simpan</button>
+                        </div>
+                    </div>
+                    <div class="pkn-card-body p-0">
+                        <div class="pkn-table-wrap" style="border:none">
+                            <table class="pkn-table">
+                                <thead><tr><th>No</th><th>Nama</th><th>Jenis</th><th>Proyek</th><th style="width:120px">Kehadiran</th><th>Keterangan</th></tr></thead>
+                                <tbody id="absensiBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Rekap -->
+            <div id="tab-rekap" class="pkn-tab-content">
+                <div class="pkn-card">
+                    <div class="pkn-card-header">
+                        <h3 class="pkn-card-title"><i class="fas fa-chart-bar"></i> Rekap Bulanan</h3>
+                        <select class="filter-select" id="rekapMonth">
+                            <option value="2025-07">Juli 2025</option>
+                            <option value="2025-06">Juni 2025</option>
+                            <option value="2025-05">Mei 2025</option>
+                        </select>
+                    </div>
+                    <div class="pkn-card-body">
+                        <div class="row g-3" id="rekapCards"></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="workerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:var(--radius-lg);border:1px solid var(--pkn-border)">
+            <div class="modal-header" style="border-bottom:1px solid var(--pkn-border-light);padding:18px 24px">
+                <h5 class="modal-title" id="workerModalTitle"><i class="fas fa-hard-hat me-2 text-pkn"></i>Tambah Pekerja</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px">
+                <div class="row g-3">
+                    <div class="col-12"><div class="pkn-form-group"><label class="pkn-form-label">Nama Pekerja <span class="required">*</span></label><input type="text" class="pkn-form-control" id="wName" placeholder="Nama lengkap"></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Jenis Tenaga Kerja</label>
+                        <select class="pkn-form-control" id="wType">
+                            <option>Mandor</option><option>Tukang Bata</option><option>Tukang Besi</option>
+                            <option>Tukang Kayu</option><option>Tukang Las</option><option>Kenek</option>
+                            <option>Operator Alat</option><option>Tukang Cat</option>
+                        </select></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Proyek</label>
+                        <select class="pkn-form-control" id="wProject">
+                            <option>Gedung Perkantoran Tower A</option><option>Jembatan Layang Kelapa Gading</option>
+                            <option>Perumahan Grand PKN Residence</option><option>Renovasi Gedung B Pemda</option>
+                        </select></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Subkontraktor</label><input type="text" class="pkn-form-control" id="wSub" placeholder="Nama subkon (opsional)"></div></div>
+                    <div class="col-md-3"><div class="pkn-form-group"><label class="pkn-form-label">Jam Kerja/Hari</label><input type="number" class="pkn-form-control" id="wHours" value="8" min="1" max="12"></div></div>
+                    <div class="col-md-3"><div class="pkn-form-group"><label class="pkn-form-label">Status</label>
+                        <select class="pkn-form-control" id="wStatus"><option value="aktif">Aktif</option><option value="nonaktif">Non-aktif</option></select></div></div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid var(--pkn-border-light);padding:16px 24px">
+                <button type="button" class="btn-pkn btn-pkn-ghost" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn-pkn btn-pkn-primary" onclick="saveWorker()"><i class="fas fa-save me-1"></i>Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/workers.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

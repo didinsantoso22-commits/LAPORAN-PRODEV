@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Report — PKN Construction Management System</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/daily-report.css">
+</head>
+<body class="pkn-body" data-page="daily-report">
+
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat form...</div>
+    </div>
+</div>
+
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <!-- Page Header -->
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-file-alt"></i> Daily Report</div>
+                    <h1 class="page-title">Buat Laporan Harian</h1>
+                    <p class="page-subtitle">Isi form berikut untuk membuat laporan harian konstruksi</p>
+                </div>
+                <div class="page-actions">
+                    <a href="reports.html" class="btn-pkn btn-pkn-ghost btn-pkn-sm">
+                        <i class="fas fa-list"></i> Daftar Laporan
+                    </a>
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button class="btn-pkn btn-pkn-accent" onclick="saveDraft()">
+                        <i class="fas fa-save"></i> Simpan Draft
+                    </button>
+                    <button class="btn-pkn btn-pkn-primary" onclick="submitReport()">
+                        <i class="fas fa-paper-plane"></i> Submit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Report Number Banner -->
+            <div class="report-number-banner mb-4">
+                <div class="report-num-label">Nomor Laporan</div>
+                <div class="report-num-value" id="reportNumber">DR-2025-0043</div>
+                <div class="report-num-status">
+                    <span class="pkn-badge pkn-badge-warning"><i class="fas fa-pencil-alt"></i> Draft</span>
+                </div>
+            </div>
+
+            <form id="dailyReportForm" novalidate>
+            <!-- ===== SECTION 1: INFO PROYEK ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-info-circle"></i> Informasi Proyek</h3>
+                    <span class="section-num">01</span>
+                </div>
+                <div class="pkn-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Tanggal Laporan <span class="required">*</span></label>
+                                <input type="date" class="pkn-form-control" id="reportDate" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Jam Mulai <span class="required">*</span></label>
+                                <input type="time" class="pkn-form-control" id="startTime" value="07:00">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Jam Selesai</label>
+                                <input type="time" class="pkn-form-control" id="endTime" value="17:00">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-8">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Nama Proyek <span class="required">*</span></label>
+                                <select class="pkn-form-control" id="projectName" required onchange="fillProjectInfo(this.value)">
+                                    <option value="">-- Pilih Proyek --</option>
+                                    <option value="Gedung Perkantoran Tower A">Gedung Perkantoran Tower A</option>
+                                    <option value="Jembatan Layang Kelapa Gading">Jembatan Layang Kelapa Gading</option>
+                                    <option value="Perumahan Grand PKN Residence">Perumahan Grand PKN Residence</option>
+                                    <option value="Renovasi Gedung B Pemda">Renovasi Gedung B Pemda</option>
+                                    <option value="Dermaga Pelabuhan PKN">Dermaga Pelabuhan PKN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Cuaca Pagi <span class="required">*</span></label>
+                                <select class="pkn-form-control" id="weatherMorning" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Cerah">☀️ Cerah</option>
+                                    <option value="Cerah Berawan">⛅ Cerah Berawan</option>
+                                    <option value="Mendung">☁️ Mendung</option>
+                                    <option value="Hujan Ringan">🌦️ Hujan Ringan</option>
+                                    <option value="Hujan Lebat">🌧️ Hujan Lebat</option>
+                                    <option value="Hujan Angin">⛈️ Hujan Angin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Cuaca Siang</label>
+                                <select class="pkn-form-control" id="weatherAfternoon">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Cerah">☀️ Cerah</option>
+                                    <option value="Cerah Berawan">⛅ Cerah Berawan</option>
+                                    <option value="Mendung">☁️ Mendung</option>
+                                    <option value="Hujan Ringan">🌦️ Hujan Ringan</option>
+                                    <option value="Hujan Lebat">🌧️ Hujan Lebat</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Cuaca Sore</label>
+                                <select class="pkn-form-control" id="weatherEvening">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Cerah">☀️ Cerah</option>
+                                    <option value="Cerah Berawan">⛅ Cerah Berawan</option>
+                                    <option value="Mendung">☁️ Mendung</option>
+                                    <option value="Hujan Ringan">🌦️ Hujan Ringan</option>
+                                    <option value="Hujan Lebat">🌧️ Hujan Lebat</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Lokasi / Site</label>
+                                <input type="text" class="pkn-form-control" id="location" placeholder="Contoh: Jakarta Selatan">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Owner / Pemilik</label>
+                                <input type="text" class="pkn-form-control" id="owner" placeholder="Nama pemilik proyek">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Kontraktor</label>
+                                <input type="text" class="pkn-form-control" id="contractor" value="PT Pesona Khatulistiwa Nusantara">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Konsultan Pengawas</label>
+                                <input type="text" class="pkn-form-control" id="consultant" placeholder="Nama konsultan">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label">Progress Hari Ini (%)</label>
+                                <div class="pkn-form-control-group">
+                                    <input type="number" class="pkn-form-control" id="progressToday" min="0" max="100" placeholder="0" oninput="updateProgressBar(this.value)">
+                                    <span class="pkn-input-addon">%</span>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="pkn-progress">
+                                        <div class="pkn-progress-bar" id="progressBarToday" style="width:0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 2: PEKERJAAN ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-hammer"></i> Pekerjaan Hari Ini</h3>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <span class="section-num">02</span>
+                        <button type="button" class="btn-pkn btn-pkn-primary btn-pkn-sm" onclick="addWorkRow()">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table" id="workTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px">No</th>
+                                    <th>Uraian Pekerjaan</th>
+                                    <th style="width:140px">Volume</th>
+                                    <th style="width:100px">Satuan</th>
+                                    <th style="width:100px">Lokasi</th>
+                                    <th style="width:40px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="workTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 3: MATERIAL ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-boxes"></i> Material Digunakan</h3>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <span class="section-num">03</span>
+                        <button type="button" class="btn-pkn btn-pkn-primary btn-pkn-sm" onclick="addMaterialRow()">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table" id="materialTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px">No</th>
+                                    <th>Nama Material</th>
+                                    <th style="width:120px">Volume Pakai</th>
+                                    <th style="width:120px">Sisa Stok</th>
+                                    <th style="width:100px">Satuan</th>
+                                    <th style="width:40px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 4: PERALATAN ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-tools"></i> Peralatan Digunakan</h3>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <span class="section-num">04</span>
+                        <button type="button" class="btn-pkn btn-pkn-primary btn-pkn-sm" onclick="addEquipmentRow()">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table" id="equipmentTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px">No</th>
+                                    <th>Nama Alat</th>
+                                    <th style="width:120px">Jumlah</th>
+                                    <th style="width:120px">Kondisi</th>
+                                    <th style="width:120px">Jam Kerja</th>
+                                    <th style="width:40px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipmentTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 5: TENAGA KERJA ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-hard-hat"></i> Tenaga Kerja</h3>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <span class="section-num">05</span>
+                        <button type="button" class="btn-pkn btn-pkn-primary btn-pkn-sm" onclick="addWorkerRow()">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table" id="workerTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px">No</th>
+                                    <th>Jenis Tenaga Kerja</th>
+                                    <th style="width:100px">Jumlah</th>
+                                    <th style="width:140px">Subkontraktor</th>
+                                    <th style="width:100px">Jam Kerja</th>
+                                    <th style="width:40px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="workerTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pkn-card-footer">
+                    <span class="text-muted" style="font-size:.8rem">
+                        Total Pekerja Hari Ini: <strong id="totalWorkerCount">0</strong> orang
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 6: CATATAN ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-clipboard-list"></i> Catatan & Rencana</h3>
+                    <span class="section-num">06</span>
+                </div>
+                <div class="pkn-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label"><i class="fas fa-exclamation-triangle text-warning me-1"></i>Hambatan / Kendala</label>
+                                <textarea class="pkn-form-control" id="obstacles" rows="4"
+                                    placeholder="Tuliskan hambatan atau kendala yang dihadapi hari ini..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label"><i class="fas fa-lightbulb text-success me-1"></i>Solusi / Tindakan</label>
+                                <textarea class="pkn-form-control" id="solutions" rows="4"
+                                    placeholder="Tuliskan solusi atau tindakan yang diambil..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label"><i class="fas fa-calendar-day text-info me-1"></i>Rencana Kerja Besok</label>
+                                <textarea class="pkn-form-control" id="tomorrowPlan" rows="3"
+                                    placeholder="Tuliskan rencana pekerjaan untuk besok..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="pkn-form-group">
+                                <label class="pkn-form-label"><i class="fas fa-sticky-note text-secondary me-1"></i>Catatan Tambahan</label>
+                                <textarea class="pkn-form-control" id="additionalNotes" rows="2"
+                                    placeholder="Catatan lain yang perlu disampaikan..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION 7: DOKUMENTASI FOTO ===== -->
+            <div class="pkn-card mb-4">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-camera"></i> Dokumentasi Foto</h3>
+                    <span class="section-num">07</span>
+                </div>
+                <div class="pkn-card-body">
+                    <div class="pkn-upload-zone" id="uploadZone" onclick="document.getElementById('photoUpload').click()">
+                        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <div class="upload-title">Klik atau seret foto ke sini</div>
+                        <div class="upload-desc">Format: JPG, PNG, HEIC — Maks 10MB per foto — Maks 10 foto</div>
+                        <input type="file" id="photoUpload" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
+                    </div>
+                    <div class="photo-preview-grid mt-3" id="photoPreviewGrid"></div>
+                </div>
+            </div>
+
+            <!-- Submit Actions -->
+            <div class="form-submit-bar">
+                <button type="button" class="btn-pkn btn-pkn-ghost" onclick="resetForm()">
+                    <i class="fas fa-times"></i> Reset Form
+                </button>
+                <div style="display:flex;gap:8px">
+                    <button type="button" class="btn-pkn btn-pkn-outline" onclick="saveDraft()">
+                        <i class="fas fa-save"></i> Simpan Draft
+                    </button>
+                    <button type="button" class="btn-pkn btn-pkn-primary btn-pkn-lg" onclick="submitReport()">
+                        <i class="fas fa-paper-plane"></i> Submit Laporan
+                    </button>
+                </div>
+            </div>
+            </form>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/daily-report.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

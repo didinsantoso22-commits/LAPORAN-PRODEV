@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Laporan — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/reports.css">
+</head>
+<body class="pkn-body" data-page="reports">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat laporan...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-list-alt"></i> Reports</div>
+                    <h1 class="page-title">Daftar Laporan Harian</h1>
+                    <p class="page-subtitle">Semua laporan harian konstruksi tersimpan di sini</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="exportExcel()">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                    <a href="daily-report.html" class="btn-pkn btn-pkn-accent">
+                        <i class="fas fa-plus"></i> Buat Laporan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="report-stat-card">
+                        <div class="rsc-value" id="totalReports">0</div>
+                        <div class="rsc-label">Total Laporan</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="report-stat-card" style="--rsc:var(--pkn-success)">
+                        <div class="rsc-value" id="submittedReports">0</div>
+                        <div class="rsc-label">Disubmit</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="report-stat-card" style="--rsc:var(--pkn-warning)">
+                        <div class="rsc-value" id="draftReports">0</div>
+                        <div class="rsc-label">Draft</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="report-stat-card" style="--rsc:var(--pkn-info)">
+                        <div class="rsc-value" id="thisMonthReports">0</div>
+                        <div class="rsc-label">Bulan Ini</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter + Search -->
+            <div class="pkn-card mb-3">
+                <div class="pkn-filter-row">
+                    <span class="filter-label"><i class="fas fa-filter"></i> Filter</span>
+                    <select class="filter-select" id="filterProject" onchange="applyFilter()">
+                        <option value="">Semua Proyek</option>
+                        <option>Gedung Perkantoran Tower A</option>
+                        <option>Jembatan Layang Kelapa Gading</option>
+                        <option>Perumahan Grand PKN Residence</option>
+                        <option>Renovasi Gedung B Pemda</option>
+                        <option>Dermaga Pelabuhan PKN</option>
+                    </select>
+                    <select class="filter-select" id="filterStatus" onchange="applyFilter()">
+                        <option value="">Semua Status</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="draft">Draft</option>
+                    </select>
+                    <input type="month" class="filter-select" id="filterMonth" onchange="applyFilter()" style="padding:0 10px">
+                    <div class="pkn-search ms-auto">
+                        <i class="fas fa-search pkn-search-icon"></i>
+                        <input type="text" class="pkn-search-input" id="searchInput" placeholder="Cari laporan..." oninput="applyFilter()">
+                    </div>
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="clearFilter()">
+                        <i class="fas fa-times"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reports Table -->
+            <div class="pkn-card">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-table"></i> Laporan</h3>
+                    <span class="text-muted" style="font-size:.78rem" id="resultCount"></span>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table" id="reportsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:130px">No. Laporan</th>
+                                    <th>Nama Proyek</th>
+                                    <th style="width:110px">Tanggal</th>
+                                    <th style="width:90px">Progress</th>
+                                    <th style="width:80px">Pekerja</th>
+                                    <th style="width:100px">Status</th>
+                                    <th style="width:60px">Dibuat</th>
+                                    <th style="width:100px">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyReports" class="pkn-empty" style="display:none">
+                        <div class="pkn-empty-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="pkn-empty-title">Belum ada laporan</div>
+                        <div class="pkn-empty-desc">Belum ada laporan yang sesuai dengan filter. Buat laporan harian pertama Anda.</div>
+                        <a href="daily-report.html" class="btn-pkn btn-pkn-accent">
+                            <i class="fas fa-plus"></i> Buat Laporan
+                        </a>
+                    </div>
+                </div>
+                <div class="pkn-card-footer d-flex justify-content-between align-items-center">
+                    <span class="text-muted" style="font-size:.78rem">Menampilkan <span id="showingCount">0</span> laporan</span>
+                    <div class="pkn-pagination" id="pagination"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/reports.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

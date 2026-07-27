@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/progress.css">
+</head>
+<body class="pkn-body" data-page="progress">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat progress...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-tasks"></i> Progress</div>
+                    <h1 class="page-title">Progress Proyek</h1>
+                    <p class="page-subtitle">Monitor kemajuan seluruh proyek secara real-time</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-accent" onclick="openAddProject()"><i class="fas fa-plus"></i> Proyek Baru</button>
+                </div>
+            </div>
+
+            <!-- Progress Cards -->
+            <div class="row g-4" id="projectCards"></div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius:var(--radius-lg);border:1px solid var(--pkn-border)">
+            <div class="modal-header" style="border-bottom:1px solid var(--pkn-border-light);padding:18px 24px">
+                <h5 class="modal-title"><i class="fas fa-project-diagram me-2 text-pkn"></i>Tambah Proyek</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px">
+                <div class="row g-3">
+                    <div class="col-12"><div class="pkn-form-group"><label class="pkn-form-label">Nama Proyek <span class="required">*</span></label><input type="text" class="pkn-form-control" id="projName" placeholder="Nama proyek"></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Lokasi</label><input type="text" class="pkn-form-control" id="projLocation" placeholder="Lokasi proyek"></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Owner</label><input type="text" class="pkn-form-control" id="projOwner" placeholder="Nama owner"></div></div>
+                    <div class="col-md-4"><div class="pkn-form-group"><label class="pkn-form-label">Tanggal Mulai</label><input type="date" class="pkn-form-control" id="projStart"></div></div>
+                    <div class="col-md-4"><div class="pkn-form-group"><label class="pkn-form-label">Tanggal Selesai</label><input type="date" class="pkn-form-control" id="projEnd"></div></div>
+                    <div class="col-md-4"><div class="pkn-form-group"><label class="pkn-form-label">Progress Awal (%)</label><input type="number" class="pkn-form-control" id="projProgress" placeholder="0" min="0" max="100"></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Nilai Kontrak (Rp)</label><input type="number" class="pkn-form-control" id="projValue" placeholder="0"></div></div>
+                    <div class="col-md-6"><div class="pkn-form-group"><label class="pkn-form-label">Warna Proyek</label>
+                        <select class="pkn-form-control" id="projColor">
+                            <option value="#1a3a5c">Navy Blue</option><option value="#2980b9">Corporate Blue</option>
+                            <option value="#27ae60">Green</option><option value="#e8a020">Gold</option>
+                            <option value="#8e44ad">Purple</option><option value="#e74c3c">Red</option>
+                        </select></div></div>
+                    <div class="col-12"><div class="pkn-form-group"><label class="pkn-form-label">Deskripsi</label><textarea class="pkn-form-control" id="projDesc" rows="2" placeholder="Deskripsi proyek..."></textarea></div></div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid var(--pkn-border-light);padding:16px 24px">
+                <button type="button" class="btn-pkn btn-pkn-ghost" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn-pkn btn-pkn-primary" onclick="saveProject()"><i class="fas fa-save me-1"></i>Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/progress.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

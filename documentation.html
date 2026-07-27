@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/documentation.css">
+</head>
+<body class="pkn-body" data-page="documentation">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content"><img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'"><div class="loading-brand">PKN CMS</div><div class="loading-spinner"><div class="spinner-ring"></div></div><div class="loading-text">Memuat dokumentasi...</div></div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-photo-video"></i> Dokumentasi</div>
+                    <h1 class="page-title">Galeri Dokumentasi</h1>
+                    <p class="page-subtitle">Foto dan dokumentasi visual seluruh proyek</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="toggleView()"><i class="fas fa-th" id="viewIcon"></i></button>
+                    <button class="btn-pkn btn-pkn-accent" onclick="document.getElementById('uploadDoc').click()">
+                        <i class="fas fa-upload"></i> Upload Foto
+                        <input type="file" id="uploadDoc" accept="image/*" multiple style="display:none" onchange="handleDocUpload(event)">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter -->
+            <div class="pkn-filter-row pkn-card mb-4" style="border-radius:var(--radius-lg)">
+                <span class="filter-label"><i class="fas fa-filter"></i> Filter</span>
+                <select class="filter-select" id="filterDocProject" onchange="renderGallery()">
+                    <option value="">Semua Proyek</option>
+                    <option>Gedung Perkantoran Tower A</option>
+                    <option>Jembatan Layang Kelapa Gading</option>
+                    <option>Perumahan Grand PKN Residence</option>
+                </select>
+                <select class="filter-select" id="filterDocCat" onchange="renderGallery()">
+                    <option value="">Semua Kategori</option>
+                    <option value="Progres">Progres</option>
+                    <option value="Struktur">Struktur</option>
+                    <option value="Material">Material</option>
+                    <option value="Safety">Safety</option>
+                </select>
+                <div class="pkn-search ms-auto">
+                    <i class="fas fa-search pkn-search-icon"></i>
+                    <input type="text" class="pkn-search-input" id="searchDoc" placeholder="Cari foto..." oninput="renderGallery()">
+                </div>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div id="docGallery" class="doc-gallery-grid"></div>
+
+            <!-- Lightbox -->
+            <div class="doc-lightbox" id="docLightbox" onclick="closeLightbox(event)">
+                <div class="lightbox-content">
+                    <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+                    <button class="lightbox-nav prev" onclick="navLightbox(-1);event.stopPropagation()"><i class="fas fa-chevron-left"></i></button>
+                    <img src="" alt="" id="lightboxImg">
+                    <button class="lightbox-nav next" onclick="navLightbox(1);event.stopPropagation()"><i class="fas fa-chevron-right"></i></button>
+                    <div class="lightbox-info" id="lightboxInfo"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/documentation.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>

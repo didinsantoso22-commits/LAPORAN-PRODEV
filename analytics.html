@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics — PKN CMS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKN CMS">
+    <meta name="theme-color" content="#1B5EA6">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/pages/analytics.css">
+</head>
+<body class="pkn-body" data-page="analytics">
+<div class="pkn-loading" id="pknLoading">
+    <div class="loading-content">
+        <img src="assets/img/logo.svg" alt="PKN" class="loading-logo" onerror="this.style.display='none'">
+        <div class="loading-brand">PKN CMS</div>
+        <div class="loading-spinner"><div class="spinner-ring"></div></div>
+        <div class="loading-text">Memuat analitik...</div>
+    </div>
+</div>
+<div class="pkn-app" id="pknApp">
+    <div id="sidebarMount"></div>
+    <div class="pkn-main" id="pknMain">
+        <div id="headerMount"></div>
+        <main class="pkn-content" id="pknContent">
+
+            <!-- Header -->
+            <div class="pkn-page-header">
+                <div class="page-title-group">
+                    <div class="page-eyebrow"><i class="fas fa-chart-bar"></i> Analytics</div>
+                    <h1 class="page-title">Analitik & Laporan</h1>
+                    <p class="page-subtitle">Visualisasi data dan statistik seluruh proyek PKN</p>
+                </div>
+                <div class="page-actions">
+                    <select class="filter-select" id="analyticsProject" onchange="updateAllCharts()">
+                        <option value="">Semua Proyek</option>
+                        <option>Gedung Perkantoran Tower A</option>
+                        <option>Jembatan Layang Kelapa Gading</option>
+                        <option>Perumahan Grand PKN Residence</option>
+                        <option>Renovasi Gedung B Pemda</option>
+                        <option>Dermaga Pelabuhan PKN</option>
+                    </select>
+                    <select class="filter-select" id="analyticsPeriod" onchange="updateAllCharts()">
+                        <option value="7">7 Hari</option>
+                        <option value="30" selected>30 Hari</option>
+                        <option value="90">3 Bulan</option>
+                        <option value="365">1 Tahun</option>
+                    </select>
+                    <button class="btn-pkn btn-pkn-ghost btn-pkn-sm" onclick="exportReport()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-xl-3">
+                    <div class="kpi-card" style="--kpi:#1a3a5c">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Avg. Progress</span>
+                            <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                        <div class="kpi-value">72<span class="kpi-unit">%</span></div>
+                        <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +5% vs bulan lalu</div>
+                        <div class="kpi-sparkline"><canvas id="sparkProgress" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="kpi-card" style="--kpi:#27ae60">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Total Laporan</span>
+                            <div class="kpi-icon"><i class="fas fa-file-alt"></i></div>
+                        </div>
+                        <div class="kpi-value" id="kpiTotalReport">142</div>
+                        <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +12 bulan ini</div>
+                        <div class="kpi-sparkline"><canvas id="sparkReport" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="kpi-card" style="--kpi:#e8a020">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Total Pekerja</span>
+                            <div class="kpi-icon"><i class="fas fa-hard-hat"></i></div>
+                        </div>
+                        <div class="kpi-value">284</div>
+                        <div class="kpi-trend flat"><i class="fas fa-minus"></i> Stabil</div>
+                        <div class="kpi-sparkline"><canvas id="sparkWorker" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3">
+                    <div class="kpi-card" style="--kpi:#e74c3c">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Efisiensi</span>
+                            <div class="kpi-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        </div>
+                        <div class="kpi-value">88<span class="kpi-unit">%</span></div>
+                        <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +3% vs minggu lalu</div>
+                        <div class="kpi-sparkline"><canvas id="sparkEff" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 1: Progress + Pie -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-xl-8">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-chart-area"></i> Tren Progress Proyek</h3>
+                            <div class="pkn-card-actions">
+                                <div class="pkn-tabs" style="padding:2px;gap:2px">
+                                    <button class="pkn-tab-btn active" style="flex:unset;padding:5px 12px;font-size:.75rem" onclick="switchProgressView('line',this)">Line</button>
+                                    <button class="pkn-tab-btn" style="flex:unset;padding:5px 12px;font-size:.75rem" onclick="switchProgressView('bar',this)">Bar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:280px">
+                                <canvas id="progressTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-chart-pie"></i> Distribusi Progress</h3>
+                        </div>
+                        <div class="pkn-card-body d-flex flex-column align-items-center">
+                            <div style="height:200px;width:200px;position:relative">
+                                <canvas id="progressDistChart"></canvas>
+                            </div>
+                            <div class="chart-legend mt-2 w-100">
+                                <div class="legend-item"><span class="legend-dot" style="background:#27ae60"></span>&gt;75% (2 proyek)</div>
+                                <div class="legend-item"><span class="legend-dot" style="background:#e8a020"></span>50–75% (1 proyek)</div>
+                                <div class="legend-item"><span class="legend-dot" style="background:#2980b9"></span>25–50% (1 proyek)</div>
+                                <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span>&lt;25% (1 proyek)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Material + Workers -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-boxes"></i> Penggunaan Material (Top 6)</h3>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:260px">
+                                <canvas id="materialChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="pkn-card h-100">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-hard-hat"></i> Tenaga Kerja per Kategori</h3>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:260px">
+                                <canvas id="workerCatChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Daily Reports + Cuaca + Efisiensi -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-8">
+                    <div class="pkn-card">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-file-alt"></i> Frekuensi Laporan Harian</h3>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:220px">
+                                <canvas id="reportFreqChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="pkn-card">
+                        <div class="pkn-card-header">
+                            <h3 class="pkn-card-title"><i class="fas fa-cloud-sun"></i> Distribusi Cuaca</h3>
+                        </div>
+                        <div class="pkn-card-body">
+                            <div class="pkn-chart-container" style="height:220px">
+                                <canvas id="weatherChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 4: Project Table -->
+            <div class="pkn-card">
+                <div class="pkn-card-header">
+                    <h3 class="pkn-card-title"><i class="fas fa-table"></i> Ringkasan Performa Proyek</h3>
+                    <span class="pkn-badge pkn-badge-primary">5 Proyek</span>
+                </div>
+                <div class="pkn-card-body p-0">
+                    <div class="pkn-table-wrap" style="border:none">
+                        <table class="pkn-table" id="performanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Proyek</th>
+                                    <th>Progress</th>
+                                    <th>Target</th>
+                                    <th>Deviasi</th>
+                                    <th>Pekerja</th>
+                                    <th>Laporan</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performanceBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="assets/js/sidebar-template.js"></script>
+<script src="assets/js/header-template.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(reg => console.log("[PKN] SW registered:", reg.scope))
+      .catch(err => console.warn("[PKN] SW failed:", err));
+  });
+}
+</script>
+</body>
+</html>
